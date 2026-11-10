@@ -1,5 +1,5 @@
 // 결과 카드 PNG 만들기 (외부 라이브러리 없이 canvas로 직접 그림)
-import { charSrcs, peperoSrcs, loadFirst, cheerPose, CHEER_POINT, SCENE_ASPECT } from './assets.js';
+import { charSrcs, peperoSrcs, prizeSrcs, loadFirst, cheerPose, CHEER_POINT, SCENE_ASPECT } from './assets.js';
 import { CONFIG } from './config.js';
 
 const C = { purple: '#C8A2E8', purpleD: '#9A6FC4', ink: '#4A2F5E', cream: '#FFF4E5', pink: '#FFBBD5', white: '#FFFDF8', gold: '#FFD866', red: '#B3261E' };
@@ -71,7 +71,7 @@ export async function makeResultPng({ result, pepero, characters, texts }) {
 
   // 빼빼로
   box(ctx, W / 2 - 190, 400, 380, 380, C.white, 28);
-  const pimg = await loadFirst(peperoSrcs(pepero.id));
+  const pimg = isWin ? (await loadFirst(prizeSrcs())) || (await loadFirst(peperoSrcs(pepero.id))) : await loadFirst(peperoSrcs(pepero.id));
   if (pimg) {
     ctx.save(); rrect(ctx, W / 2 - 184, 406, 368, 368, 24); ctx.clip();
     contain(ctx, pimg, W / 2 - 184, 406, 368, 368); ctx.restore();
@@ -84,7 +84,7 @@ export async function makeResultPng({ result, pepero, characters, texts }) {
       ctx.restore();
     });
   }
-  text(ctx, pepero.name, W / 2, 815, 34);
+  text(ctx, isWin ? (texts.prizeName || '🎁 빼빼로 기프티콘 당첨!') : pepero.name, W / 2, 815, 34, isWin ? '#F28DB2' : C.ink);
 
   // 하뀨하들이 옹기종기 모여 빼빼로 나눠 먹는 장면 (화면과 같은 배치)
   const hat = CONFIG.CHEF_HAT ? await loadFirst(['assets/ui/chef-hat.png']) : null;

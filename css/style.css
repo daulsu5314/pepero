@@ -563,6 +563,15 @@ button { font-family: inherit; }
 .result-card .msg { margin: 0 0 12px; font-size: 14px; line-height: 1.6; }
 .result-card .r-pepero { width: 150px; height: 150px; margin: 0 auto 6px; display: block; background: var(--cream); border: 3px solid var(--ink); border-radius: 12px; overflow: hidden; }
 .result-card .r-pepero img { object-fit: cover; }
+.result-card .r-prize {
+  display: block; width: 150px; height: 210px; margin: 4px auto 8px;
+  padding: 8px; background: #fff; border: 3px solid var(--ink); border-radius: 12px;
+  box-shadow: 0 0 0 4px var(--gold);
+  animation: prizeIn .6s cubic-bezier(.3,1.6,.5,1) both;
+}
+.result-card .r-prize img { object-fit: contain; }
+@keyframes prizeIn { from { transform: scale(.4) rotate(-8deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.result-card .prize-name { color: var(--pink-d); font-size: 15px; }
 .result-card .r-pname { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
 .result-card .char-grid { margin: 8px 0; }
 .result-card .greet { font-size: 13px; color: var(--purple-d); font-weight: 700; margin: 8px 0 0; }
@@ -571,7 +580,7 @@ button { font-family: inherit; }
   background: var(--cream); border: 4px dashed var(--ink); border-radius: 12px;
 }
 .code-box .label { font-size: 12px; }
-.code-box .code { display: block; margin: 6px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: 1px; word-break: break-all; user-select: all; }
+.code-box .code { display: block; margin: 6px 0 10px; font-size: clamp(14px, 4.6vw, 19px); font-weight: 700; letter-spacing: 0; white-space: nowrap; user-select: all; }
 .claim { text-align: left; font-size: 12px; line-height: 1.7; white-space: pre-line; padding: 10px; background: #F6EEFC; border-radius: 10px; margin: 8px 0; }
 .claim-form { margin: 8px 0; padding: 12px; text-align: left; background: var(--white); border: 3px solid var(--ink); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
 .claim-label { font-size: 13px; font-weight: 700; }

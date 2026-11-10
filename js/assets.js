@@ -16,6 +16,11 @@ export function charSrcs(id, st = 'idle') {
   ].filter(Boolean))];
 }
 
+// 실제 당첨 상품 사진 (assets/ui/prize.png 또는 관리자 업로드)
+export function prizeSrcs() {
+  return [overrides.prize && overrides.prize.main, 'assets/ui/prize.png'].filter(Boolean);
+}
+
 export function peperoSrcs(id) {
   const o = overrides.pepero && overrides.pepero[id];
   return [o, `assets/pepero/${id}.png`, `assets/pepero/${id}.jpg`, `assets/pepero/${id}.webp`].filter(Boolean);

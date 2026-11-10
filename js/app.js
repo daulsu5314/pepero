@@ -1,7 +1,7 @@
 // 하뀨하의 우당탕탕 빼빼로 공장 — 메인 로직
 import { CONFIG } from './config.js';
 import * as api from './api.js';
-import { setAssetOverrides, charRig, peperoEl, cheerPose, CHEER_POINT, SCENE_ASPECT } from './assets.js';
+import { setAssetOverrides, charRig, peperoEl, cheerPose, CHEER_POINT, SCENE_ASPECT, fallbackImg, prizeSrcs } from './assets.js';
 import { sound } from './sound.js';
 import { charEl } from './assets.js';
 import { makeResultPng } from './card.js';
@@ -466,8 +466,15 @@ function showResult() {
   const m = add('<p class="msg"></p>'); m.textContent = isWin ? T('winMsg') : T('loseMsg');
   if (isWin && r.demo) m.textContent = '(데모) 실제 서버 연결 후에는 이렇게 보여요. 이 번호로는 경품을 받을 수 없어요.';
 
-  const pw = peperoEl(p); pw.classList.add('r-pepero'); card.appendChild(pw);
-  const pn = add('<div class="r-pname"></div>'); pn.textContent = p.name;
+  if (isWin) {
+    // 당첨: 실제 상품 사진 보여 주기 (사진이 없으면 고른 빼빼로 그림)
+    const prize = fallbackImg(prizeSrcs(), () => peperoEl(p), '당첨 상품', 'r-prize');
+    card.appendChild(prize);
+    const pn = add('<div class="r-pname prize-name"></div>'); pn.textContent = T('prizeName');
+  } else {
+    const pw = peperoEl(p); pw.classList.add('r-pepero'); card.appendChild(pw);
+    const pn = add('<div class="r-pname"></div>'); pn.textContent = p.name;
+  }
 
   add('<p class="give-title">다 같이 빼빼로로 짠! 🥂</p>');
   card.appendChild(shareScene(p));

@@ -11,7 +11,7 @@ const TEXT_LABELS = {
   greeting1: '메인 문구 1', greeting2: '메인 문구 2',
   loseTitle: '일반 선물 제목', loseMsg: '일반 선물 메시지',
   winTitle: '당첨 제목', winMsg: '당첨 메시지',
-  howToClaim: '기프티콘 수령 방법', cardMsg: '결과 이미지 하단 문구',
+  howToClaim: '기프티콘 수령 방법', cardMsg: '결과 이미지 하단 문구', prizeName: '당첨 상품 이름',
 };
 let settings = null;
 
@@ -166,7 +166,8 @@ $('#settingsForm').addEventListener('submit', async (e) => {
 function fillImgTargets() {
   $('#imgTarget').innerHTML =
     '<optgroup label="캐릭터">' + CONFIG.CHARACTERS.map((c) => `<option value="characters:${c.id}">${esc(c.name)}</option>`).join('') + '</optgroup>'
-    + '<optgroup label="빼빼로 사진">' + CONFIG.PEPEROS.map((p) => `<option value="pepero:${p.id}">${esc(p.name)}</option>`).join('') + '</optgroup>';
+    + '<optgroup label="빼빼로 사진">' + CONFIG.PEPEROS.map((p) => `<option value="pepero:${p.id}">${esc(p.name)}</option>`).join('') + '</optgroup>'
+    + '<optgroup label="당첨 상품"><option value="prize:main">당첨 상품 사진</option></optgroup>';
   const sync = () => { $('#imgState').disabled = !$('#imgTarget').value.startsWith('characters:'); };
   $('#imgTarget').addEventListener('change', sync); sync();
 }
@@ -186,7 +187,7 @@ $('#btnUpload').addEventListener('click', async () => {
   const [kind, id] = $('#imgTarget').value.split(':');
   const st = $('#imgState').value;
   const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const path = kind === 'characters' ? `characters/${id}/${st}.${ext}` : `pepero/${id}.${ext}`;
+  const path = kind === 'characters' ? `characters/${id}/${st}.${ext}` : kind === 'prize' ? `ui/prize.${ext}` : `pepero/${id}.${ext}`;
   $('#imgMsg').textContent = '업로드 중…';
   try {
     const url = await api.adminUpload(path, file);
