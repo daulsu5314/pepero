@@ -17,7 +17,16 @@ function tone(freq, dur = 0.08, type = 'square', vol = 0.04, when = 0) {
   o.start(t); o.stop(t + dur + 0.02);
 }
 
-const MELODY = [523, 659, 784, 659, 587, 698, 880, 698, 523, 659, 784, 1047, 988, 784, 659, 0];
+// 하뀨하 공장 전용 오리지널 8비트 멜로디 (C장조, 경쾌한 제과점 느낌)
+// [음 높이(Hz), 길이(박)] — 0 은 쉼표
+const N = { C4: 262, D4: 294, E4: 330, F4: 349, G4: 392, A4: 440, B4: 494, C5: 523, D5: 587, E5: 659, F5: 698, G5: 784, A5: 880 };
+const MELODY = [
+  ['E5',1],['G5',1],['C5',1],['E5',1], ['D5',1],['F5',1],['A4',2],
+  ['G4',1],['C5',1],['E5',1],['G5',1], ['F5',1],['E5',1],['D5',2],
+  ['E5',1],['G5',1],['A5',1],['G5',1], ['F5',1],['E5',1],['D5',1],['C5',1],
+  ['D5',1],['E5',1],['D5',1],['B4',1], ['C5',3],[0,1],
+];
+const BASS = ['C4','C4','F4','F4','G4','G4','C4','C4','A4','A4','F4','F4','G4','G4','C4','C4'];
 let bgmTimer = null, bgmAudio = null, bgmStep = 0;
 
 export const sound = {
@@ -41,11 +50,19 @@ export const sound = {
     try { await bgmAudio.play(); return true; }
     catch {
       bgmAudio = { pause() {}, play() { return Promise.reject(); } }; // 파일 없음 → 합성음
+      // 박 단위로 진행 (1박 = 220ms)
+      let beat = 0, idx = 0, left = 0;
       bgmTimer = setInterval(() => {
-        const f = MELODY[bgmStep++ % MELODY.length];
-        if (f) tone(f, 0.18, 'triangle', 0.025);
-        if (bgmStep % 4 === 1) tone(131, 0.2, 'square', 0.015);
-      }, 260);
+        if (left <= 0) {
+          const [n, len] = MELODY[idx % MELODY.length];
+          if (n) tone(N[n], len * 0.2, 'square', 0.022);
+          left = len; idx++;
+        }
+        left--;
+        if (beat % 2 === 0) tone(N[BASS[(beat / 2) % BASS.length]] / 2, 0.16, 'triangle', 0.03);
+        if (beat % 4 === 2) tone(1800, 0.02, 'square', 0.006);
+        beat++;
+      }, 220);
       return true;
     }
   },

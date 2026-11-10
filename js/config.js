@@ -61,8 +61,8 @@ export const CONFIG = {
     { id: 'bingping',       name: '빙핑',     task: '토핑 뿌리기',   line: '토핑 팡팡!',            act: 'sprinkle', fx: '✨', paw: '#fbf2be', rig: { hat: [50, 24, 58, 0],  arm: [84, 60], hand: [70, 80, 14] } },
     { id: 'toramwi',        name: '토라뮈',   task: '굳히기',        line: '조금만 기다려~',        act: 'wait',     fx: '❄️', paw: '#ffffff', rig: { hat: [50, 36, 50, 0],  arm: [80, 70], hand: [78, 82, 12] } },
     { id: 'stelnyang',      name: '스텔냥',   task: '품질 검사',     line: '검사 완료!',            act: 'inspect',  fx: '🔍', paw: '#ffffff', rig: { hat: [50, 6, 52, 8],   arm: [80, 66], hand: [74, 84, 16] } },
-    { id: 'nosungi',        name: '노숭이',   task: '상자 담기',     line: '차곡차곡!',             act: 'stack',    fx: '📦', paw: '#fadcb6', rig: { hat: [50, 6, 56, 0],   arm: [84, 66], hand: [66, 76, 26] } },
-    { id: 'jungddangkong',  name: '정땅콩',   scale: 0.7,   task: '포장 꾸미기',   line: '이렇게 꾸미면 되겠다!', act: 'sticker',  fx: '⭐', paw: '#fde3c0', rig: { hat: [48, 4, 46, -4],  arm: [80, 56], hand: [67, 58, 34] } },
+    { id: 'nosungi',        name: '노숭이',   task: '상자 담기',     line: '차곡차곡!',             act: 'stack',    fx: '📦', paw: '#f88843', rig: { hat: [50, 6, 56, 0],   arm: [84, 66], hand: [66, 76, 26] } },
+    { id: 'jungddangkong',  name: '정땅콩',   scale: 0.7,   task: '포장 꾸미기',   line: '이렇게 꾸미면 되겠다!', act: 'sticker',  fx: '⭐', paw: '#fde3c0', rig: { hat: [48, 4, 46, -4],  arm: [68, 45], hand: [67, 58, 34] } },
     { id: 'alssonghamsong', name: '알쏭햄쏭', task: '리본 묶기',     line: '완성!',                 act: 'ribbon',   fx: '🎀', paw: '#ffee76', rig: { hat: [50, 4, 58, 0],   arm: [86, 62], hand: [80, 74, 14] } },
   ],
 
