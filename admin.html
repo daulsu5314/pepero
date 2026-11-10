@@ -29,7 +29,9 @@
     th { background: var(--purple); color: #fff; }
     td .code { font-weight: 700; word-break: break-all; }
     .tag { display: inline-block; padding: 2px 8px; border-radius: 8px; border: 2px solid var(--ink); font-size: 11px; white-space: nowrap; }
-    .tag.pending { background: var(--gold); } .tag.paid { background: #BFE8C6; } .tag.check { background: #FFB4A8; }
+    .tag.pending { background: var(--gold); } .tag.paid { background: #BFE8C6; } .tag.check { background: #FFB4A8; } .tag.canceled { background: #ddd; text-decoration: line-through; }
+    .btns button.danger { border-color: #B3261E; color: #B3261E; }
+    tr.is-canceled td { opacity: .6; }
     .btns { display: flex; gap: 4px; flex-wrap: wrap; }
     .btns button { font: inherit; font-size: 11px; padding: 4px 6px; border: 2px solid var(--ink); border-radius: 8px; background: #fff; cursor: pointer; }
     .searchbar { display: grid; grid-template-columns: 1fr 120px; gap: 8px; margin-bottom: 10px; }
@@ -100,6 +102,7 @@
           <option value="pending">지급 대기</option>
           <option value="check">확인 필요</option>
           <option value="paid">지급 완료</option>
+          <option value="canceled">당첨 취소</option>
         </select>
       </div>
       <p class="f-help">당첨자가 적어 보낸 <b>받을 X 아이디</b>를 눌러 그 계정으로 DM으로 기프티콘 전송 → [지급 완료]. 아이디를 아직 안 보낸 당첨자는 빨간 글씨로 표시돼요.</p>

@@ -222,7 +222,7 @@ export async function adminStats() {
 export async function adminListWinners(q = '', status = '') {
   if (IS_DEMO) {
     const qq = q.trim().toUpperCase();
-    return demoDraws().filter((d) => d.is_winner
+    return demoDraws().filter((d) => (d.is_winner || d.status === 'canceled')
       && (!qq || (d.win_code || '').includes(qq) || (d.x_username || '').toUpperCase().includes(qq) || (d.claim_x || '').toUpperCase().includes(qq))
       && (!status || d.status === status));
   }
@@ -231,7 +231,7 @@ export async function adminListWinners(q = '', status = '') {
   const run = (withClaim) => {
     let query = c.from('draws')
       .select('id,win_code,created_at,pepero,status,paid_at,x_username,auth_provider,admin_memo' + (withClaim ? ',claim_x,claimed_at' : ''))
-      .eq('is_winner', true).order('created_at', { ascending: false }).limit(1000);
+      .or('is_winner.eq.true,status.eq.canceled').order('created_at', { ascending: false }).limit(1000);
     if (safe) query = query.or(`win_code.ilike.%${safe}%,x_username.ilike.%${safe}%` + (withClaim ? `,claim_x.ilike.%${safe}%` : ''));
     if (status) query = query.eq('status', status);
     return query;
@@ -254,6 +254,21 @@ export async function adminSetStatus(id, status, memo) {
   const c = await client('admin');
   const { error } = await c.from('draws').update(patch).eq('id', id);
   if (error) throw error;
+}
+
+// 당첨 취소 → 당첨이 무효가 되고 남은 기프티콘 수량이 1개 돌아와요
+export async function adminCancelWin(id) {
+  if (IS_DEMO) {
+    const upd = (d) => (d.id === id && d.is_winner ? { ...d, is_winner: false, status: 'canceled' } : d);
+    ls.set(LS.demoDraws, demoDraws().map(upd));
+    const mine = ls.get(LS.demoMy);
+    if (mine) ls.set(LS.demoMy, upd(mine));
+    return { ok: true };
+  }
+  const c = await client('admin');
+  const { data, error } = await c.rpc('admin_cancel_win', { p_id: id });
+  if (error) throw error;
+  return data;
 }
 
 export async function adminGetSettings() {

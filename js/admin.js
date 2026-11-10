@@ -6,7 +6,7 @@ import * as api from './api.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const STATUS = { pending: '지급 대기', paid: '지급 완료', check: '확인 필요', none: '-' };
+const STATUS = { pending: '지급 대기', paid: '지급 완료', check: '확인 필요', canceled: '당첨 취소', none: '-' };
 const TEXT_LABELS = {
   greeting1: '메인 문구 1', greeting2: '메인 문구 2',
   loseTitle: '일반 선물 제목', loseMsg: '일반 선물 메시지',
@@ -54,7 +54,7 @@ async function loadWinners() {
     const list = await api.adminListWinners($('#q').value, $('#statusFilter').value);
     if (!list.length) { rows.innerHTML = '<tr><td colspan="5">해당하는 당첨자가 없어요.</td></tr>'; return; }
     rows.innerHTML = list.map((d) => `
-      <tr data-id="${esc(d.id)}">
+      <tr data-id="${esc(d.id)}" class="${d.status === 'canceled' ? 'is-canceled' : ''}">
         <td><span class="code">${esc(d.win_code)}</span><br>
             ${d.claim_x
               ? `<b>받을 X: <a href="https://x.com/${esc(d.claim_x)}" target="_blank" rel="noopener">@${esc(d.claim_x)}</a></b>`
@@ -64,11 +64,12 @@ async function loadWinners() {
         <td>${fmt(d.created_at)}${d.paid_at ? `<br><small>지급 ${fmt(d.paid_at)}</small>` : ''}</td>
         <td>${esc(peperoName(d.pepero))}</td>
         <td><span class="tag ${esc(d.status)}">${STATUS[d.status] || esc(d.status)}</span></td>
-        <td class="btns">
+        <td class="btns">${d.status === 'canceled' ? '<small>취소됨 (수량 반환)</small> <button data-memo>메모</button>' : `
           <button data-set="paid">지급 완료</button>
           <button data-set="pending">지급 대기</button>
           <button data-set="check">확인 필요</button>
           <button data-memo>메모</button>
+          <button data-cancel class="danger">당첨 취소</button>`}
         </td>
       </tr>`).join('');
   } catch (e) {
@@ -83,7 +84,11 @@ $('#winnerRows').addEventListener('click', async (e) => {
   const id = tr.dataset.id;
   const code = tr.querySelector('.code').textContent;
   try {
-    if (e.target.dataset.set) {
+    if (e.target.hasAttribute('data-cancel')) {
+      if (!confirm(`${code}\n이 당첨을 취소할까요?\n\n· 이 참여자는 일반 선물로 바뀌어요\n· 남은 기프티콘이 1개 돌아와서 다른 사람이 당첨될 수 있어요\n· 되돌릴 수 없어요`)) return;
+      const r = await api.adminCancelWin(id);
+      toast(r && r.ok ? '당첨을 취소했어요. 기프티콘 1개가 돌아왔어요.' : '이미 취소됐거나 찾을 수 없어요.');
+    } else if (e.target.dataset.set) {
       const st = e.target.dataset.set;
       if (st === 'paid' && !confirm(`${code}\n기프티콘을 실제로 전달했나요? 지급 완료로 바꿀게요.`)) return;
       await api.adminSetStatus(id, st);
