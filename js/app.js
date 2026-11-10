@@ -627,7 +627,6 @@ function bindUI() {
     if (e.target.closest('[data-close]') || e.target.classList.contains('modal')) closeModals();
   });
   $('#btnOrder').addEventListener('click', () => { sound.click(); show('select'); });
-  $('#btnInfo').addEventListener('click', () => { sound.click(); renderInfo(); openModal('infoModal'); });
   $('#btnSkip').addEventListener('click', () => { sound.click(); finishMaking(); });
   $('#btnOpen').addEventListener('click', openGift);
   $('#btnMyGift').addEventListener('click', () => { if (state.result) showResult(); });
