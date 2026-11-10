@@ -1,5 +1,5 @@
 // 결과 카드 PNG 만들기 (외부 라이브러리 없이 canvas로 직접 그림)
-import { charSrcs, peperoSrcs, prizeSrcs, loadFirst, cheerPose, CHEER_POINT, SCENE_ASPECT } from './assets.js';
+import { charSrcs, peperoSrcs, prizeSrcs, loadFirst, bodyBox, cheerPose, CHEER_POINT, SCENE_ASPECT } from './assets.js';
 import { CONFIG } from './config.js';
 
 const C = { purple: '#C8A2E8', purpleD: '#9A6FC4', ink: '#4A2F5E', cream: '#FFF4E5', pink: '#FFBBD5', white: '#FFFDF8', gold: '#FFD866', red: '#B3261E' };
@@ -116,7 +116,8 @@ export async function makeResultPng({ result, pepero, characters, texts }) {
     const c = characters.find((x) => x.id === pos.id);
     if (!c) continue;
     const w = SW * pos.s / 100, cx = SX + SW * pos.x / 100, bottom = SB - SH * pos.y / 100;
-    const top = bottom - w, bx = cx - w / 2 + w * 0.11, by = top + w * 0.22, bw = w * 0.78;
+    const bb = bodyBox(c);
+    const top = bottom - w, bx = cx - w / 2 + w * bb.left, by = top + w * bb.top, bw = w * bb.size;
     const img = await loadFirst(charSrcs(c.id, 'happy'));
     if (!img) continue;
     contain(ctx, img, bx, by, bw, bw, false);

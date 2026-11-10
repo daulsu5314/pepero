@@ -53,6 +53,7 @@ export const CONFIG = {
   //   arm: [손 가로 위치, 세로 위치]  (제작 화면에서 도구 든 손)
   //   hand: [그림 속 손 가로, 세로, 빼빼로 기울기]  (결과 화면에서 빼빼로를 쥐는 위치)
   //   paw: 손 색
+  //   scale: (선택) 캐릭터 크기 배율. 예: 0.7 = 0.7배 (발 위치는 그대로)
   //   (쭈일리언은 머리 위 하늘이에게 모자를 씌웠어요)
   CHARACTERS: [
     { id: 'juilien',        name: '쭈일리언', task: '초콜릿 녹이기', line: '휘휘~',                 act: 'stir',     fx: '🍫', paw: '#dda6dd', rig: { hat: [49, 3, 34, 0],   arm: [84, 62], hand: [86, 64, 12] } },
@@ -61,7 +62,7 @@ export const CONFIG = {
     { id: 'toramwi',        name: '토라뮈',   task: '굳히기',        line: '조금만 기다려~',        act: 'wait',     fx: '❄️', paw: '#ffffff', rig: { hat: [50, 36, 50, 0],  arm: [80, 70], hand: [78, 82, 12] } },
     { id: 'stelnyang',      name: '스텔냥',   task: '품질 검사',     line: '검사 완료!',            act: 'inspect',  fx: '🔍', paw: '#ffffff', rig: { hat: [50, 6, 52, 8],   arm: [80, 66], hand: [74, 84, 16] } },
     { id: 'nosungi',        name: '노숭이',   task: '상자 담기',     line: '차곡차곡!',             act: 'stack',    fx: '📦', paw: '#fadcb6', rig: { hat: [50, 6, 56, 0],   arm: [84, 66], hand: [66, 76, 26] } },
-    { id: 'jungddangkong',  name: '정땅콩',   task: '포장 꾸미기',   line: '이렇게 꾸미면 되겠다!', act: 'sticker',  fx: '⭐', paw: '#fde3c0', rig: { hat: [48, 4, 46, -4],  arm: [80, 56], hand: [67, 58, 34] } },
+    { id: 'jungddangkong',  name: '정땅콩',   scale: 0.7,   task: '포장 꾸미기',   line: '이렇게 꾸미면 되겠다!', act: 'sticker',  fx: '⭐', paw: '#fde3c0', rig: { hat: [48, 4, 46, -4],  arm: [80, 56], hand: [67, 58, 34] } },
     { id: 'alssonghamsong', name: '알쏭햄쏭', task: '리본 묶기',     line: '완성!',                 act: 'ribbon',   fx: '🎀', paw: '#ffee76', rig: { hat: [50, 4, 58, 0],   arm: [86, 62], hand: [80, 74, 14] } },
   ],
 

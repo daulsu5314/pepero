@@ -66,6 +66,12 @@ export function charEl(c, st = 'idle') {
 // 캐릭터 + 요리사 모자 + (선택) 도구를 든 손
 // 원본 캐릭터 이미지는 그대로 두고, 모자·손·도구는 위에 겹쳐 그리는 별도 레이어예요.
 // 위치는 config.js 의 CHARACTERS[].rig 로 조절해요.
+// 캐릭터 몸 그림이 차지하는 칸 (리그 크기 대비 비율). config 의 scale 로 크기 조절, 발은 바닥에 고정
+export function bodyBox(c) {
+  const size = 0.78 * ((c && c.scale) || 1);
+  return { left: (1 - size) / 2, top: 1 - size, size };
+}
+
 // 치얼스 장면: 각자 손에서 가운데 '짠!' 지점을 향해 빼빼로를 뻗는 각도·길이 계산
 // (화면과 PNG 저장 둘 다 같은 계산을 사용)
 export const SCENE_ASPECT = 0.66;          // 장면 높이 / 너비
@@ -77,7 +83,8 @@ export function cheerPose(c, pos) {
   const w = pos.s / 100;                         // 리그 크기 (장면 너비 기준)
   const H = SCENE_ASPECT;
   const left = pos.x / 100 - w / 2, top = H * (1 - pos.y / 100) - w;
-  const bx = left + w * 0.11, by = top + w * 0.22, bw = w * 0.78;
+  const bb = bodyBox(c);
+  const bx = left + w * bb.left, by = top + w * bb.top, bw = w * bb.size;
   const hx = bx + bw * gx / 100, hy = by + bw * gy / 100;
   const cx = CHEER_POINT[0], cy = H * CHEER_POINT[1];
   const dx = cx - hx, dy = cy - hy;
@@ -96,6 +103,12 @@ export function charRig(c, st = 'idle', { hat = CONFIG.CHEF_HAT, tool = false, m
   rig.style.cssText = `--hx:${hx}%;--hy:${hy}%;--hw:${hw}%;--hr:${hr}deg;--ax:${ax}%;--ay:${ay}%;--paw:${c.paw || '#fff'}`;
   const body = document.createElement('span');
   body.className = 'body';
+  if (c.scale && c.scale !== 1) {
+    const bb = bodyBox(c);
+    body.style.left = bb.left * 100 + '%';
+    body.style.right = bb.left * 100 + '%';
+    body.style.top = bb.top * 100 + '%';
+  }
   body.appendChild(charEl(c, st));
   if (hat) {
     const h = new Image();
