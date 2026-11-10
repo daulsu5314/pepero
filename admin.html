@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>관리자 · 하뀨하 빼빼로 공장</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .game.admin { max-width: 760px; }
+    .panel { margin: 14px 0; padding: 14px; background: var(--white); border: 4px solid var(--ink); border-radius: 14px; box-shadow: 0 5px 0 var(--ink); }
+    .panel h2 { margin: 0 0 10px; font-size: 16px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+    .stat { padding: 10px; text-align: center; background: var(--cream); border: 3px solid var(--ink); border-radius: 10px; }
+    .stat b { display: block; font-size: 24px; }
+    .stat span { font-size: 11px; }
+    label.f { display: block; margin: 10px 0 4px; font-size: 12px; font-weight: 700; }
+    .f-help { font-size: 11px; color: #7A6688; margin: 2px 0 0; }
+    input, select, textarea {
+      width: 100%; padding: 9px 10px; font: inherit; font-size: 14px; color: var(--ink);
+      background: #fff; border: 3px solid var(--ink); border-radius: 10px;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .switch { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; padding: 10px; background: #FFF0F5; border: 3px solid var(--pink-d); border-radius: 10px; }
+    .switch input { width: 24px; height: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 8px 6px; border-bottom: 2px solid var(--cream-d); text-align: left; vertical-align: top; }
+    th { background: var(--purple); color: #fff; }
+    td .code { font-weight: 700; word-break: break-all; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 8px; border: 2px solid var(--ink); font-size: 11px; white-space: nowrap; }
+    .tag.pending { background: var(--gold); } .tag.paid { background: #BFE8C6; } .tag.check { background: #FFB4A8; }
+    .btns { display: flex; gap: 4px; flex-wrap: wrap; }
+    .btns button { font: inherit; font-size: 11px; padding: 4px 6px; border: 2px solid var(--ink); border-radius: 8px; background: #fff; cursor: pointer; }
+    .searchbar { display: grid; grid-template-columns: 1fr 120px; gap: 8px; margin-bottom: 10px; }
+    .checklist { font-size: 12px; line-height: 1.8; margin: 0; padding-left: 18px; }
+    .table-wrap { overflow-x: auto; }
+    .flex-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    @media (max-width: 600px) {
+      .row { grid-template-columns: 1fr; }
+      table thead { display: none; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      tr { margin-bottom: 10px; padding: 8px; border: 3px solid var(--ink); border-radius: 10px; background: var(--cream); }
+      td { border: 0; padding: 3px 0; }
+      td .code { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="game admin">
+  <div id="modeBanner" class="mode-banner" hidden></div>
+  <header class="topbar">
+    <span class="logo">🔐 ADMIN · HAKYUHA FACTORY</span>
+    <button id="btnLogout" class="chip" hidden>로그아웃</button>
+  </header>
+
+  <!-- 로그인 -->
+  <section id="loginView" class="screen active">
+    <div class="panel">
+      <h2>관리자 로그인</h2>
+      <form id="loginForm">
+        <label class="f" for="email">이메일</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label class="f" for="pw">비밀번호</label>
+        <input id="pw" type="password" autocomplete="current-password" required>
+        <div class="actions"><button class="btn primary" type="submit">로그인</button></div>
+      </form>
+      <p id="loginMsg" class="hint"></p>
+    </div>
+    <div id="demoEnter" class="panel" hidden>
+      <h2>🧪 데모 관리자</h2>
+      <p class="small-txt">서버가 연결되지 않아 데모 모드예요. 이 브라우저에 저장된 데모 기록만 보여요.</p>
+      <div class="actions"><button id="btnDemoAdmin" class="btn pink">데모 관리자 페이지 열기</button></div>
+    </div>
+  </section>
+
+  <!-- 관리자 화면 -->
+  <section id="adminView" class="screen">
+    <div class="panel">
+      <div class="flex-head"><h2>📊 대시보드</h2><button id="btnRefresh" class="chip">새로고침</button></div>
+      <div class="stats">
+        <div class="stat"><b id="sParticipants">-</b><span>전체 참여자</span></div>
+        <div class="stat"><b id="sWinners">-</b><span>기프티콘 당첨자</span></div>
+        <div class="stat"><b id="sRemain">-</b><span>남은 기프티콘</span></div>
+        <div class="stat"><b id="sPaid">-</b><span>지급 완료</span></div>
+        <div class="stat"><b id="sUnpaid">-</b><span>미지급</span></div>
+      </div>
+      <div id="demoTools" class="actions" hidden>
+        <button id="btnSim" class="btn small">[데모] 가상 참여자 10명 추첨</button>
+        <button id="btnDemoClear" class="btn small ghost">[데모] 모든 데모 기록 삭제</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🎁 당첨자 관리</h2>
+      <div class="searchbar">
+        <input id="q" placeholder="당첨번호 또는 X 아이디 검색" autocomplete="off">
+        <select id="statusFilter">
+          <option value="">전체</option>
+          <option value="pending">지급 대기</option>
+          <option value="check">확인 필요</option>
+          <option value="paid">지급 완료</option>
+        </select>
+      </div>
+      <p class="f-help">DM으로 받은 당첨번호를 검색 → <b>DM 보낸 X 계정과 표의 X 아이디가 같은지</b> 확인 → 기프티콘 전송 → [지급 완료].</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>당첨번호 / X 계정</th><th>당첨 일시</th><th>빼빼로</th><th>상태</th><th>변경</th></tr></thead>
+          <tbody id="winnerRows"><tr><td colspan="5">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>⚙️ 이벤트 설정</h2>
+      <form id="settingsForm">
+        <label class="switch"><input type="checkbox" id="isLive"> 실제 경품 추첨 ON</label>
+        <p class="f-help">켜기 전에 README의 "오픈 전 체크리스트"를 꼭 확인하세요. 꺼져 있으면 아무도 당첨될 수 없어요.</p>
+
+        <label class="f" for="authMode">참여 인증 방식</label>
+        <select id="authMode">
+          <option value="x">X 로그인 필수 (권장 · 1계정 1회 · 본인 확인 가능)</option>
+          <option value="anonymous">로그인 없이 간편 참여 (중복 참여를 완전히 막을 수 없음)</option>
+        </select>
+
+        <div class="row">
+          <div><label class="f" for="startAt">추첨 시작</label><input id="startAt" type="datetime-local"></div>
+          <div><label class="f" for="endAt">추첨 종료</label><input id="endAt" type="datetime-local"></div>
+        </div>
+        <p class="f-help">비워 두면 시간 제한 없음. (한국 시간 기준으로 입력)</p>
+
+        <div class="row">
+          <div><label class="f" for="total">기프티콘 총 수량</label><input id="total" type="number" min="0" step="1"></div>
+          <div><label class="f" for="prob">당첨 확률 (%)</label><input id="prob" type="number" min="0" max="100" step="0.01"></div>
+        </div>
+        <p class="f-help">예: 100명 참여 예상 + 기프티콘 10개 → 약 10%. 수량이 다 떨어지면 확률과 관계없이 당첨이 멈춰요.</p>
+
+        <label class="f" for="xLink">운영자 X 계정 링크</label>
+        <input id="xLink" type="url" placeholder="https://x.com/아이디">
+
+        <div id="textFields"></div>
+
+        <div class="actions"><button class="btn primary" type="submit">설정 저장</button></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>🖼️ 이미지 교체</h2>
+      <p class="f-help">업로드한 이미지는 사이트의 assets 폴더 이미지보다 우선해요. (투명 배경 PNG, 정사각형 권장)</p>
+      <div class="row">
+        <div>
+          <label class="f" for="imgTarget">대상</label>
+          <select id="imgTarget"></select>
+        </div>
+        <div>
+          <label class="f" for="imgState">캐릭터 상태</label>
+          <select id="imgState">
+            <option value="idle">기본 (idle)</option>
+            <option value="work">작업 중 (work)</option>
+            <option value="happy">기쁨 (happy)</option>
+            <option value="done">완료 (done)</option>
+          </select>
+        </div>
+      </div>
+      <label class="f" for="imgFile">파일</label>
+      <input id="imgFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+      <div class="actions">
+        <button id="btnUpload" class="btn pink">업로드하고 적용</button>
+        <button id="btnResetImg" class="btn small ghost">이 대상의 업로드 이미지 해제 (기본 파일로)</button>
+      </div>
+      <p id="imgMsg" class="hint"></p>
+    </div>
+
+    <div class="panel">
+      <h2>✅ 오픈 전 체크리스트</h2>
+      <ol class="checklist">
+        <li>js/config.js 에 SUPABASE_URL / ANON KEY 입력 (상단 빨간 DEMO 배너가 사라졌는지)</li>
+        <li>schema.sql 실행 완료, admins 에 내 계정 등록</li>
+        <li>Edge Function <b>draw</b> 배포 + Verify JWT 끔</li>
+        <li>X 로그인 제공자 설정 + Redirect URL 에 GitHub Pages 주소 등록</li>
+        <li>다른 폰/계정으로 테스트 참여 → 결과 확인 → 테스트 기록 삭제</li>
+        <li>기프티콘 수량·확률·기간·X 링크 확인 후 [실제 경품 추첨 ON]</li>
+      </ol>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</div>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

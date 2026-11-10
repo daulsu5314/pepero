@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#C8A2E8">
+  <title>하뀨하의 우당탕탕 빼빼로 공장</title>
+  <meta name="description" content="하뀨하 8마리가 직접 만들어 주는 빼빼로 선물! HAPPY PEPERO DAY 2026.11.11">
+  <meta property="og:title" content="하뀨하의 우당탕탕 빼빼로 공장">
+  <meta property="og:description" content="하뀨하 8마리가 직접 만들어 주는 빼빼로 선물! 2026.11.11">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app" class="game">
+  <div id="modeBanner" class="mode-banner" hidden></div>
+
+  <header class="topbar">
+    <span class="logo">🍫 HAKYUHA FACTORY</span>
+    <button id="bgmBtn" class="chip" aria-label="배경음악 켜기/끄기">♪ OFF</button>
+  </header>
+
+  <!-- ============ 1. 메인 ============ -->
+  <section id="screen-main" class="screen active">
+    <div class="title-box">
+      <h1>하뀨하의<br><span>우당탕탕 빼빼로 공장</span></h1>
+      <p class="sub">HAPPY PEPERO DAY</p>
+      <p class="date">2026.11.11</p>
+    </div>
+
+    <div class="factory-scene">
+      <div class="drips"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="factory">
+        <div class="chimney"><span class="smoke s1"></span><span class="smoke s2"></span></div>
+        <div class="roof"></div>
+        <div class="building">
+          <div class="sign">PEPERO</div>
+          <div class="windows"><i></i><i></i><i></i></div>
+          <div class="door"></div>
+        </div>
+      </div>
+      <div id="mainChars" class="char-grid"></div>
+    </div>
+
+    <div class="dialog">
+      <p id="tGreeting1"></p>
+      <p id="tGreeting2"></p>
+      <span class="next">▼</span>
+    </div>
+
+    <div id="myGiftNotice" class="notice" hidden>
+      이미 선물을 받았어요!
+      <button id="btnMyGift" class="btn small pink">내 선물 다시 보기</button>
+    </div>
+
+    <div class="actions">
+      <button id="btnOrder" class="btn primary big">빼빼로 주문하기</button>
+      <button id="btnInfo" class="btn">이벤트 안내</button>
+    </div>
+  </section>
+
+  <!-- ============ 2. 빼빼로 선택 ============ -->
+  <section id="screen-select" class="screen">
+    <div class="dialog"><p>어떤 빼빼로를 만들어 줄까?</p><p class="small-txt">하나를 골라 주세요!</p></div>
+    <div id="peperoList" class="pepero-grid"></div>
+    <div class="actions"><button class="btn" data-go="main">← 돌아가기</button></div>
+  </section>
+
+  <!-- ============ 3. 제작 (공장 라인) ============ -->
+  <section id="screen-making" class="screen">
+    <div class="ticket">
+      <div id="ticketImg" class="ticket-img"></div>
+      <div class="ticket-txt">
+        <p class="t-label">📋 주문 접수 완료!</p>
+        <p id="ticketName" class="t-name"></p>
+        <p class="small-txt">하뀨하들이 열심히 만들고 있어요!</p>
+      </div>
+    </div>
+
+    <div id="floor" class="floor">
+      <div class="wall">
+        <span class="pipe p1"></span><span class="pipe p2"></span>
+        <span class="line-sign">PEPERO LINE</span>
+        <span class="lamp l1"></span><span class="lamp l2"></span>
+      </div>
+      <div class="line" id="line0">
+        <div class="crew"></div>
+        <div class="belt-strip"><span class="rollers"></span></div>
+        <div class="names"></div>
+      </div>
+      <div class="chute"></div>
+      <div class="line rev" id="line1">
+        <div class="crew"></div>
+        <div class="belt-strip"><span class="rollers"></span></div>
+        <div class="names"></div>
+      </div>
+      <div id="item" class="item" data-stage="0">
+        <span class="pot"><i class="steam"></i></span>
+        <span class="sticks"><i></i><i></i><i></i></span>
+        <span class="gbox"><i class="sticker">★</i><i class="ribbon"></i><i class="bow"></i></span>
+        <span id="itemFx" class="item-fx"></span>
+      </div>
+    </div>
+
+    <p id="workLabel" class="work-label">준비 중…</p>
+    <div class="progress" aria-label="제작 진행률">
+      <div id="progressBar" class="bar"></div>
+      <span id="progressText">0%</span>
+    </div>
+    <div class="actions"><button id="btnSkip" class="btn small">건너뛰기 ▶▶</button></div>
+  </section>
+
+  <!-- ============ 4. 포장 완료 ============ -->
+  <section id="screen-packed" class="screen">
+    <div class="dialog">
+      <p>하뀨하들이 빼빼로를 완성했어요!</p>
+      <p>선물상자를 열어볼까요?</p>
+    </div>
+    <div class="gift-stage">
+      <div id="giftBox" class="gift">
+        <div class="lid"><div class="bow"><i></i><i></i></div></div>
+        <div class="box-body"><div class="ribbon-v"></div></div>
+        <span class="sparkle sp1">✦</span><span class="sparkle sp2">✧</span>
+        <span class="sparkle sp3">✦</span><span class="sparkle sp4">★</span>
+      </div>
+      <div id="packCrew" class="pack-crew"></div>
+    </div>
+    <div id="turnstileBox" class="turnstile"></div>
+    <div class="actions">
+      <button id="btnOpen" class="btn primary big">선물상자 열기</button>
+    </div>
+    <p id="openStatus" class="hint"></p>
+  </section>
+
+  <!-- ============ 5. 결과 ============ -->
+  <section id="screen-result" class="screen">
+    <div id="resultCard" class="result-card"></div>
+    <div class="actions">
+      <button id="btnSave" class="btn pink">결과 이미지 저장</button>
+      <button id="btnReplay" class="btn">다시 제작 과정 보기</button>
+      <button class="btn" data-go="main">처음으로</button>
+      <button id="btnDemoReset" class="btn small ghost" hidden>[데모] 내 참여 초기화</button>
+    </div>
+  </section>
+
+  <footer class="foot">© 하뀨하 빼빼로 공장 · 2026.11.11</footer>
+
+  <!-- ============ 모달 ============ -->
+  <div id="infoModal" class="modal" hidden>
+    <div class="modal-box">
+      <h2>📜 이벤트 안내</h2>
+      <div id="infoBody" class="modal-body"></div>
+      <button class="btn primary" data-close>알겠어요!</button>
+    </div>
+  </div>
+
+  <div id="loginModal" class="modal" hidden>
+    <div class="modal-box">
+      <h2>🔑 X 로그인이 필요해요</h2>
+      <div class="modal-body">
+        <p>실제 빼빼로 기프티콘 추첨은 <b>X 계정 1개당 1번</b>만 참여할 수 있어요.</p>
+        <p>로그인한 X 계정은 당첨 시 <b>본인 확인용</b>으로만 사용돼요. 글을 올리거나 팔로우하지 않아요.</p>
+        <p class="small-txt">로그인 후 이 화면으로 돌아오면 선물상자가 자동으로 열려요.</p>
+      </div>
+      <button id="btnLoginX" class="btn primary">𝕏 로 로그인하기</button>
+      <button class="btn small ghost" data-close>나중에 할게요</button>
+    </div>
+  </div>
+
+  <div id="imageModal" class="modal" hidden>
+    <div class="modal-box">
+      <h2>📸 결과 이미지</h2>
+      <p class="small-txt">휴대폰에서는 이미지를 길게 눌러 저장할 수 있어요.</p>
+      <img id="savedImg" class="saved-img" alt="결과 이미지">
+      <a id="savedLink" class="btn pink" download="hakyuha-pepero.png">이미지 다운로드</a>
+      <button class="btn small ghost" data-close>닫기</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
