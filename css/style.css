@@ -573,6 +573,14 @@ button { font-family: inherit; }
 .code-box .label { font-size: 12px; }
 .code-box .code { display: block; margin: 6px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: 1px; word-break: break-all; user-select: all; }
 .claim { text-align: left; font-size: 12px; line-height: 1.7; white-space: pre-line; padding: 10px; background: #F6EEFC; border-radius: 10px; margin: 8px 0; }
+.claim-form { margin: 8px 0; padding: 12px; text-align: left; background: var(--white); border: 3px solid var(--ink); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+.claim-label { font-size: 13px; font-weight: 700; }
+.claim-row { display: flex; align-items: center; border: 3px solid var(--ink); border-radius: 10px; background: #fff; overflow: hidden; }
+.claim-row span { padding: 0 4px 0 10px; font-size: 16px; font-weight: 700; color: var(--purple-d); }
+.claim-row input { flex: 1; min-width: 0; padding: 10px 8px; font: inherit; font-size: 16px; border: 0; outline: none; color: var(--ink); background: transparent; }
+.claim-err { margin: 0; font-size: 12px; color: #B3261E; line-height: 1.5; }
+.claim-done { margin: 0; font-size: 14px; line-height: 1.6; text-align: center; }
+.claim-done b { color: var(--pink-d); }
 .closed-note { font-size: 12px; padding: 8px; margin-top: 10px; background: #F6EEFC; border-radius: 10px; line-height: 1.6; }
 .demo-stamp {
   margin: -4px -2px 10px; padding: 6px 10px;

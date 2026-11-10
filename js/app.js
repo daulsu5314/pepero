@@ -170,7 +170,7 @@ function renderInfo() {
       <li>선물상자를 열면 즉석 추첨이 진행돼요.</li>
       <li>일부 분께는 <b>편의점 빼빼로 기프티콘</b>이 당첨돼요! 당첨 여부는 서버에서 정해지고, 새로고침해도 결과는 바뀌지 않아요.</li>
       <li>준비한 기프티콘이 모두 소진되면 추가 당첨은 없어요. 그래도 하뀨하 선물은 모두에게 드려요 💜</li>
-      <li>기프티콘은 운영자 X 계정 DM으로 보내 드려요. DM에는 <b>당첨번호만</b> 보내 주세요. 이름·전화번호 등 개인정보는 요구하지 않아요.</li>
+      <li>당첨되면 화면에서 <b>기프티콘 받을 X 아이디</b>를 적어 보내 주세요. 운영자 계정에서 그 아이디로 DM을 보내 드려요. X 아이디 외의 개인정보(이름·전화번호 등)는 받지 않아요.</li>
     </ul>
     ${period}${auth}`;
 }
@@ -387,6 +387,7 @@ function fromDraw(r, demo = false) {
     status: d.is_winner ? 'win' : 'lose',
     pepero: d.pepero || state.pepero,
     win_code: d.win_code || null,
+    claim_x: d.claim_x || null,
     existing: !!r.existing,
     demo,
   };
@@ -480,13 +481,10 @@ function showResult() {
       </div>`);
     box.querySelector('.code').textContent = r.win_code;
     const claim = add('<div class="claim"></div>');
-    let howto = T('howToClaim');
-    if (state.settings && state.settings.auth_mode === 'anonymous') {
-      howto += '\n※ 로그인 없이 참여했으므로, 이 화면을 저장한 이미지도 함께 보내 주세요.';
-    }
-    claim.textContent = howto;
-    const x = add(`<a class="btn x" target="_blank" rel="noopener">𝕏 운영자에게 DM 보내러 가기</a>`);
-    if (r.demo) { x.removeAttribute('href'); x.textContent = '(데모) DM 보내기 비활성화'; x.style.opacity = .5; }
+    claim.textContent = T('howToClaim');
+    card.appendChild(claimForm(r));
+    const x = add(`<a class="btn small x" target="_blank" rel="noopener">𝕏 운영자 계정 보러 가기 (팔로우)</a>`);
+    if (r.demo) { x.removeAttribute('href'); x.textContent = '(데모) 운영자 계정 링크'; x.style.opacity = .5; }
     else x.href = state.xLink;
     box.querySelector('#btnCopy').addEventListener('click', () => copyText(r.win_code));
     sound.fanfare();
@@ -508,6 +506,63 @@ function showResult() {
   $('#btnDemoReset').hidden = !api.IS_DEMO;
   $('#myGiftNotice').hidden = r.status === 'closed';
   show('result');
+}
+
+// 당첨자: 기프티콘 받을 X 아이디 적어 보내기
+function claimForm(r) {
+  const wrap = document.createElement('div');
+  wrap.className = 'claim-form';
+  const render = () => {
+    if (r.claim_x) {
+      wrap.innerHTML = `<p class="claim-done">✅ 접수 완료!<br><b></b> 으로 DM을 보내 드릴게요.</p>
+        <button type="button" class="btn small ghost">아이디 수정하기</button>`;
+      wrap.querySelector('b').textContent = '@' + r.claim_x;
+      wrap.querySelector('button').addEventListener('click', () => { r.claim_x = null; render(); });
+      return;
+    }
+    wrap.innerHTML = `
+      <label class="claim-label" for="claimInput">기프티콘 받을 X 아이디</label>
+      <div class="claim-row">
+        <span>@</span>
+        <input id="claimInput" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="16" placeholder="x_id">
+      </div>
+      <button type="button" class="btn pink" id="btnClaim">X 아이디 보내기</button>
+      <p class="claim-err" hidden></p>`;
+    const input = wrap.querySelector('input');
+    const err = wrap.querySelector('.claim-err');
+    const btn = wrap.querySelector('#btnClaim');
+    btn.addEventListener('click', async () => {
+      const h = input.value.trim().replace(/^@/, '');
+      err.hidden = true;
+      if (!/^[A-Za-z0-9_]{1,15}$/.test(h)) {
+        err.textContent = 'X 아이디는 영문·숫자·밑줄(_)로 15자 이내예요. 화면에 보이는 이름이 아니라 @ 뒤의 아이디를 적어 주세요.';
+        err.hidden = false; return;
+      }
+      btn.disabled = true; btn.textContent = '보내는 중…';
+      let res;
+      try { res = await api.submitClaim(h); } catch (e) { res = { ok: false, error: 'network' }; }
+      if (res && res.ok) {
+        r.claim_x = res.claim_x || h;
+        sound.pop();
+        toast('X 아이디를 보냈어요! 💜');
+        render();
+      } else {
+        btn.disabled = false; btn.textContent = 'X 아이디 보내기';
+        err.textContent = res && res.error === 'not_allowed'
+          ? '이미 지급이 끝났거나 당첨 기록을 찾을 수 없어요.'
+          : '보내지 못했어요. 잠시 후 다시 눌러 주세요.';
+        err.hidden = false;
+      }
+    });
+  };
+  render();
+  // 다시 들어온 경우 서버에 저장된 아이디 불러오기
+  if (!r.claim_x && !r.demo) {
+    api.getMyDraw().then((d) => { if (d && d.claim_x && !r.claim_x) { r.claim_x = d.claim_x; render(); } }).catch(() => {});
+  } else if (r.demo && !r.claim_x) {
+    api.getMyDraw().then((d) => { if (d && d.claim_x) { r.claim_x = d.claim_x; render(); } });
+  }
+  return wrap;
 }
 
 async function copyText(text) {

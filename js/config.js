@@ -13,6 +13,9 @@ export const CONFIG = {
   SUPABASE_ANON_KEY: 'sb_publishable_cKlicAOMpUYSvY69lBeisg_U92vpo6H',
                            // (공개용 키예요. service_role / secret 키는 절대 넣지 마세요!)
 
+  // 추첨 서버(Edge Function) 이름 — Supabase에 배포한 함수 이름과 같아야 해요
+  DRAW_FUNCTION: 'bright-endpoint',
+
   // X 로그인 제공자 이름. Supabase 대시보드에서 켠 제공자에 맞춰 주세요.
   //  - "Twitter (Deprecated)" 를 켰다면 'twitter'
   //  - "X / Twitter (OAuth 2.0)" 를 켰다면 'x'
@@ -99,7 +102,7 @@ export const CONFIG = {
     loseMsg: '실제 빼빼로는 아니지만, 하뀨하들의 마음을 받아줘! 💜',
     winTitle: '🎉 축하합니다!',
     winMsg: '하뀨하가 준비한 진짜 빼빼로에 당첨됐어요!',
-    howToClaim: '① 당첨번호를 복사해요\n② 이 이벤트에 로그인한 X 계정으로 운영자에게 DM을 보내요\n③ DM에는 당첨번호만 적어 주세요 (이름·전화번호 등 개인정보는 필요 없어요)\n④ 운영자가 확인 후 기프티콘을 DM으로 보내 드려요',
+    howToClaim: '아래 칸에 기프티콘을 받을 X 아이디를 적어 보내 주세요.\n운영자 계정에서 그 아이디로 DM을 보내 드려요.\n※ DM을 받을 수 있게 열어 두거나 운영자 계정을 팔로우해 주세요.\n※ X 아이디 말고 다른 개인정보는 받지 않아요.',
     cardMsg: 'HAPPY PEPERO DAY! 하뀨하들이 마음을 담아 만들었어요 💜',
   },
 };

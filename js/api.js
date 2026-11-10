@@ -82,10 +82,33 @@ export async function getMyDraw() {
   const c = await client();
   const { data: { session } } = await c.auth.getSession();
   if (!session) return null;
-  const { data, error } = await c.from('draws')
-    .select('pepero,is_winner,win_code,status,created_at')
+  let { data, error } = await c.from('draws')
+    .select('pepero,is_winner,win_code,status,created_at,claim_x')
     .eq('user_id', session.user.id).maybeSingle();
+  if (error) { // update_claim.sql 실행 전이면 claim_x 칸이 없을 수 있어요
+    ({ data, error } = await c.from('draws')
+      .select('pepero,is_winner,win_code,status,created_at')
+      .eq('user_id', session.user.id).maybeSingle());
+  }
   if (error) throw error;
+  return data;
+}
+
+// 당첨자가 기프티콘 받을 X 아이디 보내기
+export async function submitClaim(handle) {
+  const h = String(handle || '').trim().replace(/^@/, '');
+  if (!/^[A-Za-z0-9_]{1,15}$/.test(h)) return { ok: false, error: 'bad_handle' };
+  if (IS_DEMO) {
+    const mine = ls.get(LS.demoMy);
+    if (!mine || !mine.is_winner) return { ok: false, error: 'not_allowed' };
+    const upd = { ...mine, claim_x: h, status: mine.status === 'paid' ? 'paid' : 'pending' };
+    ls.set(LS.demoMy, upd);
+    ls.set(LS.demoDraws, demoDraws().map((d) => (d.id === mine.id ? upd : d)));
+    return { ok: true, claim_x: h };
+  }
+  const c = await client();
+  const { data, error } = await c.rpc('submit_claim', { p_handle: h });
+  if (error) return { ok: false, error: error.message };
   return data;
 }
 
@@ -100,7 +123,7 @@ export async function liveDraw(pepero, turnstileToken) {
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 15000);
-      const res = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/draw`, {
+      const res = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/${CONFIG.DRAW_FUNCTION || 'draw'}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,17 +223,21 @@ export async function adminListWinners(q = '', status = '') {
   if (IS_DEMO) {
     const qq = q.trim().toUpperCase();
     return demoDraws().filter((d) => d.is_winner
-      && (!qq || (d.win_code || '').includes(qq) || (d.x_username || '').toUpperCase().includes(qq))
+      && (!qq || (d.win_code || '').includes(qq) || (d.x_username || '').toUpperCase().includes(qq) || (d.claim_x || '').toUpperCase().includes(qq))
       && (!status || d.status === status));
   }
   const c = await client('admin');
-  let query = c.from('draws')
-    .select('id,win_code,created_at,pepero,status,paid_at,x_username,auth_provider,admin_memo')
-    .eq('is_winner', true).order('created_at', { ascending: false }).limit(1000);
   const safe = q.trim().replace(/[^A-Za-z0-9_\-]/g, '');
-  if (safe) query = query.or(`win_code.ilike.%${safe}%,x_username.ilike.%${safe}%`);
-  if (status) query = query.eq('status', status);
-  const { data, error } = await query;
+  const run = (withClaim) => {
+    let query = c.from('draws')
+      .select('id,win_code,created_at,pepero,status,paid_at,x_username,auth_provider,admin_memo' + (withClaim ? ',claim_x,claimed_at' : ''))
+      .eq('is_winner', true).order('created_at', { ascending: false }).limit(1000);
+    if (safe) query = query.or(`win_code.ilike.%${safe}%,x_username.ilike.%${safe}%` + (withClaim ? `,claim_x.ilike.%${safe}%` : ''));
+    if (status) query = query.eq('status', status);
+    return query;
+  };
+  let { data, error } = await run(true);
+  if (error) ({ data, error } = await run(false));
   if (error) throw error;
   return data;
 }

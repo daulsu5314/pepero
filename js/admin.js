@@ -56,7 +56,10 @@ async function loadWinners() {
     rows.innerHTML = list.map((d) => `
       <tr data-id="${esc(d.id)}">
         <td><span class="code">${esc(d.win_code)}</span><br>
-            <small>${d.x_username ? '𝕏 @' + esc(d.x_username) : '<i>로그인 없음</i>'}</small>
+            ${d.claim_x
+              ? `<b>받을 X: <a href="https://x.com/${esc(d.claim_x)}" target="_blank" rel="noopener">@${esc(d.claim_x)}</a></b>`
+              : '<small style="color:#B3261E">아직 X 아이디 미제출</small>'}
+            ${d.x_username ? `<br><small>로그인 𝕏 @${esc(d.x_username)}</small>` : ''}
             ${d.admin_memo ? `<br><small>📝 ${esc(d.admin_memo)}</small>` : ''}</td>
         <td>${fmt(d.created_at)}${d.paid_at ? `<br><small>지급 ${fmt(d.paid_at)}</small>` : ''}</td>
         <td>${esc(peperoName(d.pepero))}</td>
